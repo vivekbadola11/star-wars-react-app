@@ -1,13 +1,13 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import * as planetService from '../../services/planet/planetService';
 import { Button } from 'react-bootstrap';
+import * as planetActions from '../../actions/planetActions';
+import { connect } from 'react-redux';
+import PopulationBar from '../common/PopulationBar';
 
-class PlanetRow extends Component {
+class PlanetRow extends PureComponent {
     constructor(props) {
         super(props)
-        this.state = {
-            planetData: []
-        }
     }
     planetResult = [];
 
@@ -19,17 +19,25 @@ class PlanetRow extends Component {
         return (
             <React.Fragment>
                 {
-                    this.state.planetData.length > 0 ? this.state.planetData.map(function (planet) {
-                        return <tr key={planet.url+"-key"} id={planet.url+"-id"} url-value={planet.url}>
-                            <td>{planet.name}</td>
+                    this.props.planetData.results ? this.props.planetData.results.map(function (planet) {
+                        return <tr key={planet.url + "-key"} id={planet.url + "-id"} url-value={planet.url}>
                             <td>
-                                <Button className="margin-left-5" bsStyle="success" button-id={planet.url+"-id"}
+                                {planet.name}
+                            </td>
+                            <td>
+                                <Button className="margin-left-5" bsStyle="success" button-id={planet.url + "-id"}
                                     onClick={this.infoButtonHandler.bind(this)} >Info
                                 </Button>
                             </td>
+                            <td>
+                                {
+                                    planet.population != "unknown" ? <PopulationBar population={planet.population} /> : planet.population
+                                }
+                            </td>
+
                         </tr>
                     }.bind(this))
-                                                    : null
+                        : null
                 }
             </React.Fragment>
         )
@@ -49,7 +57,7 @@ class PlanetRow extends Component {
                         this.planetResult = planet;
                         console.log(this.planetResult);
                         debugger;
-                        this.props.PlanetListProps.history.push('/PlanetInfo',this.planetResult);
+                        this.props.PlanetListProps.history.push('/PlanetInfo', this.planetResult);
                     }
                 }.bind(this))
                     .catch(error => alert(error))
@@ -59,36 +67,38 @@ class PlanetRow extends Component {
 
     }
 
- 
+
     loadPlanets = () => {
-        planetService.getAllPlanets().then(function (planets) {
-            debugger;
-            this.planetResult = planets.results;
-            console.log(planets.results);
-            this.setState((pervState, props) => ({
-                planetData: this.planetResult
-            }))
-        }.bind(this))
-            .catch(error => alert(error))
+        this.props.getAllPlanets();
     }
 
     componentWillReceiveProps(props, state) {
-        this.onSearchChangeHandler(props.onSearchChangeValue)
+        if (props.searchValue != "NO_UPDATE") {
+            this.onSearchChangeHandler(props.searchValue)
+        }
     }
 
-    onSearchChangeHandler = (value) => {
-        debugger;
-        let filteredPlanets = this.planetResult.filter(planet => {
-            if (planet.name.toLowerCase().includes(value.toLowerCase())) {
-                return planet;
-            }
-            else
-                return false;
-        })
-        this.setState({ planetData: filteredPlanets })
+    onSearchChangeHandler = (searchValue) => {
+        this.props.searchPlanets(searchValue);
     }
 
 }
 
-export default PlanetRow;
+const mapStateToProps = (state) => {
+    debugger;
+    return {
+        planetData: state.PlanetReducer.planetData,
+        searchValue: state.PlanetReducer.searchValue == undefined ? "NO_UPDATE" : state.PlanetReducer.searchValue
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    debugger;
+    return {
+        searchPlanets: (searchValue) => dispatch(planetActions.searchPlanets(searchValue)),
+        getAllPlanets: () => dispatch(planetActions.getAllPlanets()),
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PlanetRow);
 

@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { FormGroup, Button, FormControl, ControlLabel } from "react-bootstrap";
 import Header from '../common/Header';
 
-export default class PlanetInfo extends Component {
+export default class PlanetInfo extends PureComponent {
   constructor(props, context) {
     super(props, context);
   }

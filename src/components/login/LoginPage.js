@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
-import * as peopleService from '../../services/people/peopleService';
+import React, { PureComponent } from 'react';
+import * as loginActions from '../../actions/loginActions';
+import { connect } from 'react-redux';
 
-class LoginPage extends Component {
+class LoginPage extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -10,8 +11,8 @@ class LoginPage extends Component {
     }
   }
 
-  componentWillMount(){
-    localStorage.setItem("isLoggedIn",false);
+  componentWillMount() {
+    localStorage.setItem("isLoggedIn", false);
     localStorage.removeItem("loginId");
   }
 
@@ -56,34 +57,8 @@ class LoginPage extends Component {
       </div>
     )
   }
-  loginClickHandler = (e) => {
-    debugger;
-    if (this.state.login && this.state.password) {
-      peopleService.getPeople(this.state.login).then(function (people) {
-        debugger;
-        if (people.count==1) {
-          if (people.results[0].birth_year == this.state.password) {
-            localStorage.setItem("isLoggedIn",true);
-            localStorage.setItem("loginId",this.state.login);
 
-            this.props.history.push("/PlanetSearch");
-          }
-          else{
-            alert("Please enter correct Login and Password");
-          }
-        } else {
-          alert("Please enter correct Login and Password");
-        }
-      }.bind(this))
-        .catch(error => alert(error))
-
-    }
-    else {
-      alert("Please enter Login and Password");
-    }
-  }
-
-  inputChangeHandler = (controlName,e) => {
+  inputChangeHandler = (controlName, e) => {
     switch (controlName) {
       case "login":
         this.setState({ login: e.target.value });
@@ -96,6 +71,55 @@ class LoginPage extends Component {
     }
   }
 
+
+
+loginClickHandler = (e) => {
+  debugger;
+  if (this.state.login && this.state.password) {
+    this.props.getPeople(this.state.login);
+  }
+  else {
+    alert("Please enter Login and Password");
+  }
 }
 
-export default LoginPage;
+
+authenticateLogin = (people) => {
+  debugger;
+  if (people.results[0].birth_year == this.state.password && this.state.login == people.results[0].name) {
+    localStorage.setItem("isLoggedIn", true);
+    localStorage.setItem("loginId", this.state.login);
+    this.props.history.push("/PlanetSearch");
+    alert("Logged in Sucessfully");
+  }
+  else {
+    alert("Please enter correct Login and Password");
+  }
+}
+
+componentWillReceiveProps(props, state) {
+  if (props.people.count>0) {
+      this.authenticateLogin(props.people)
+  }
+}
+
+}
+
+
+
+const mapStateToProps = (state) => {
+  debugger;
+  return {
+    people: state.LoginReducer.peopleData
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  debugger;
+  return {
+    getPeople: (loginValue) => dispatch(loginActions.getPeople(loginValue)),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginPage);
+//export default LoginPage;

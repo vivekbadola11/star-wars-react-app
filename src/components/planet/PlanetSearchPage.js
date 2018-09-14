@@ -1,18 +1,15 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PlanetList from './PlanetList';
 import SearchControl from '../search/SearchControl';
 import Header from '../common/Header';
+import PaginationControl from '../common/PaginationControl';
 
-class PlanetSearchPage extends Component {
+class PlanetSearchPage extends PureComponent {
     constructor(props){
         super(props)
-        this.state={
-            onSearchChangeValue:''
-        }
     }
 
     componentWillMount(){
-        debugger;
         if((localStorage.getItem("isLoggedIn")=="false")){
             this.props.history.push("/");
         }
@@ -22,15 +19,13 @@ class PlanetSearchPage extends Component {
         return (
             <React.Fragment>
                 <Header title={"Planet Search"} ParentProps={this.props}/>
-                <SearchControl  onSearchChangeHandler={this.onSearchChangeHandler.bind(this)}/>
-                <PlanetList  PlanetSearchProps={this.props} onSearchChangeValue={this.state.onSearchChangeValue} />
+                <SearchControl />
+                <PlanetList  PlanetSearchProps={this.props}/>
+                <PaginationControl/>
             </React.Fragment>
         )
     }
 
-    onSearchChangeHandler=(value)=>{
-        this.setState({onSearchChangeValue:value});
-    }
 }
 
 export default PlanetSearchPage;

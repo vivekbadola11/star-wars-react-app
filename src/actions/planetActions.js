@@ -1,49 +1,45 @@
-import * as employeeService from '../services/employeeService';
+import * as planetService from '../services/planet/planetService';
 
 
-export function getAllEmployeesResponse(employees) {
-    debugger;
-    return { type: "GET_EMPLOYEES",value: employees }
+export function getAllPlanetsResponse(planets) {
+    return { type: "GET_ALL_PLANETS",value: planets }
 }
 
-export function addEmployeeResponse(employee) {
-    return { type: "ADD_EMPLOYEE", value: employee }
+export function getPlanetDataResponse(planets) {
+    return { type: "GET_PLANET_DATA",value: planets }
 }
 
-export function editEmployeeResponse(employee) {
-    return { type: "UPDATE_EMPLOYEES", employee }
+export function searchPlanetsResponse(planets) {
+    return { type: "SEARCH_PLANETS",value: planets }
 }
 
-export function deleteEmployeeResponse(isDeleted) {
-    return { type: "DELETE_EMPLOYEES", isDeleted }
+export function passSearchValue(searchValue) {
+    return { type: "SEARCH_VALUE",value: searchValue }
 }
 
 
 
-export function getAllEmployees() {
-    debugger;
+export function getAllPlanets() {
     return dispatch=> {
-        debugger;
-        return employeeService.getAllEmployees().then((employees)=> {
-            debugger;
-              dispatch(getAllEmployeesResponse(employees));
+        return planetService.getAllPlanets().then((planets)=> {
+              dispatch(getAllPlanetsResponse(planets));
         }).catch(error => { alert(error) })
     }
 }
 
-
-export function deleteEmployee(employeeId){
-    return function(dispatch){
-        return employeeService.deleteEmployee(employeeId)
-        .then(response => {
-            if (response) {
-                debugger;
-                dispatch(deleteEmployeeResponse(true));
-                dispatch(getAllEmployees()); ;
-                alert("Data Deleted Succesfully");
-                document.getElementById("searchHandlerId").value = "";
-            }
-        })
-        .catch(error => alert(error))        
+export function getPlanetData(url) {
+    return dispatch=> {
+        return planetService.getPlanetData(url).then((planets)=> {
+              dispatch(getPlanetDataResponse(planets));
+        }).catch(error => { alert(error) })
     }
 }
+
+export function searchPlanets(searchValue) {
+    return dispatch=> {
+        return planetService.searchPlanets(searchValue).then((planets)=> {
+              dispatch(searchPlanetsResponse(planets));
+        }).catch(error => { alert(error) })
+    }
+}
+

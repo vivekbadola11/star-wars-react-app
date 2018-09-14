@@ -1,7 +1,9 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { FormControl } from "react-bootstrap";
+import * as planetActions from '../../actions/planetActions';
+import { connect } from 'react-redux';
 
-export default class SearchControl extends Component {
+class SearchControl extends PureComponent {
     constructor(props) {
         super(props)
         this.state = {
@@ -23,9 +25,24 @@ export default class SearchControl extends Component {
     }
 
     onChangeHandler(e) {
+        debugger;
         this.setState({ searchValue: e.target.value });
-        this.props.onSearchChangeHandler(e.target.value)
+        this.props.passSearchValue(e.target.value);
     }
 
-
 }
+
+
+const mapStateToProps = (state) => {
+    return {
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    debugger;
+    return {
+        passSearchValue: (searchValue) => dispatch(planetActions.passSearchValue(searchValue)),
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SearchControl);

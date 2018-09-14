@@ -1,7 +1,7 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { Button } from "react-bootstrap";
 
-export default class Header extends Component {
+export default class Header extends PureComponent {
     constructor(props) {
         super(props)
     }
